@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic AI — Topics</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page { padding-top: 80px; padding-bottom: 3rem; }
+
+    .topics-header { text-align: center; padding: 2rem 0 2.5rem; }
+    .topics-header h1 { font-family: var(--font-head); font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; }
+    .topics-header p { color: var(--text2); max-width: 520px; margin: 0 auto; }
+
+    /* Search */
+    .topics-search { max-width: 480px; margin: 1.5rem auto; position: relative; }
+    .topics-search input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 100px; padding: 0.75rem 1.25rem 0.75rem 3rem;
+      color: var(--text); font-size: 0.95rem; transition: var(--transition);
+    }
+    .topics-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,126,255,0.1); }
+    .topics-search input::placeholder { color: var(--text3); }
+    .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 1rem; }
+
+    /* Subject grid */
+    .subjects-big-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem; margin-top: 2rem;
+    }
+    .subject-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer;
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .subject-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      opacity: 0; transition: opacity 0.25s;
+    }
+    .subject-card:hover { transform: translateY(-3px); border-color: var(--border2); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+    .subject-card:hover::before { opacity: 1; }
+    .subject-card.blue::before  { background: var(--accent); }
+    .subject-card.teal::before  { background: var(--teal); }
+    .subject-card.gold::before  { background: var(--gold); }
+    .subject-card.green::before { background: var(--green); }
+    .subject-card.rose::before  { background: var(--rose); }
+    .subject-card.purple::before{ background: #a780d4; }
+
+    .subject-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+    .subject-emoji { font-size: 2rem; width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+    .subject-emoji.blue   { background: rgba(79,126,255,0.12); }
+    .subject-emoji.teal   { background: rgba(56,217,192,0.12); }
+    .subject-emoji.gold   { background: rgba(245,200,66,0.12); }
+    .subject-emoji.green  { background: rgba(61,220,132,0.12); }
+    .subject-emoji.rose   { background: rgba(255,95,126,0.12); }
+    .subject-emoji.purple { background: rgba(123,94,167,0.12); }
+
+    .subject-card-name { font-family: var(--font-head); font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .subject-card-desc { font-size: 0.82rem; color: var(--text3); margin-bottom: 1rem; }
+
+    .topic-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1.25rem; }
+    .topic-pill {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 6px; padding: 0.2rem 0.65rem;
+      font-size: 0.75rem; color: var(--text2);
+    }
+
+    .subject-card-footer { display: flex; gap: 0.5rem; }
+    .subject-card-footer .btn { flex: 1; justify-content: center; font-size: 0.8rem; }
+
+    /* No results */
+    .no-results { text-align: center; padding: 4rem 1rem; color: var(--text3); }
+    .no-results-icon { font-size: 3rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main class="page">
+    <div class="container">
+      <div class="topics-header">
+        <h1>📚 All Subjects</h1>
+        <p>Explore every topic — ask questions in <strong>Socratic Mode</strong> to learn deeply, or <strong>Direct Mode</strong> for quick answers.</p>
+      </div>
+
+      <div class="topics-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Search subjects or topics…" oninput="filterSubjects(this.value)">
+      </div>
+
+      <div class="subjects-big-grid" id="subjects-grid"></div>
+      <div class="no-results hidden" id="no-results">
+        <div class="no-results-icon">🔍</div>
+        <div>No subjects found for "<span id="no-results-q"></span>"</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    injectNav('topics');
+
+    const SUBJECT_TOPICS = {
+      math:       ['Algebra', 'Calculus', 'Statistics', 'Geometry', 'Trigonometry', 'Linear Algebra', 'Discrete Math'],
+      physics:    ['Mechanics', 'Thermodynamics', 'Electromagnetism', 'Optics', 'Quantum Physics', 'Relativity'],
+      chemistry:  ['Organic Chemistry', 'Inorganic', 'Physical Chemistry', 'Electrochemistry', 'Thermochemistry'],
+      biology:    ['Cell Biology', 'Genetics', 'Ecology', 'Evolution', 'Microbiology', 'Biochemistry'],
+      cs:         ['Algorithms', 'Data Structures', 'Databases', 'Operating Systems', 'Networking', 'AI & ML', 'OOP'],
+      history:    ['Ancient Civilizations', 'World Wars', 'Colonial Era', 'Modern History', 'Political History'],
+      literature: ['Poetry Analysis', 'Prose', 'Dramatic Theory', 'World Literature', 'Essay Writing'],
+      economics:  ['Microeconomics', 'Macroeconomics', 'International Trade', 'Behavioral Economics', 'Finance'],
+      geography:  ['Physical Geography', 'Human Geography', 'Climatology', 'Geopolitics', 'Maps & GIS'],
+      languages:  ['Grammar', 'Vocabulary', 'Essay Writing', 'Reading Comprehension', 'Communication Skills'],
+      engineering:['Circuit Theory', 'Thermodynamics', 'Signals & Systems', 'AI Essentials', 'Control Systems', 'CAD'],
+      philosophy: ['Logic', 'Ethics', 'Epistemology', 'Metaphysics', 'Political Philosophy', 'Aesthetics'],
+    };
+
+    function buildGrid(subjects) {
+      const grid = document.getElementById('subjects-grid');
+      grid.innerHTML = '';
+      subjects.forEach(s => {
+        const topics = SUBJECT_TOPICS[s.id] || [];
+        const pillsHTML = topics.slice(0,5).map(t => `<div class="topic-pill">${t}</div>`).join('') +
+          (topics.length > 5 ? `<div class="topic-pill">+${topics.length-5} more</div>` : '');
+        grid.innerHTML += `
+          <div class="subject-card ${s.color}">
+            <div class="subject-card-top">
+              <div class="subject-emoji ${s.color}">${s.emoji}</div>
+              <span class="badge badge-${s.color}">${topics.length} topics</span>
+            </div>
+            <div class="subject-card-name">${s.label}</div>
+            <div class="subject-card-desc">${s.desc}</div>
+            <div class="topic-pills">${pillsHTML}</div>
+            <div class="subject-card-footer">
+              <a href="chat.html?subject=${s.id}&mode=socratic" class="btn btn-secondary">🎓 Teach Me</a>
+              <a href="chat.html?subject=${s.id}&mode=direct"   class="btn btn-primary">💡 Ask Directly</a>
+            </div>
+          </div>`;
+      });
+    }
+
+    function filterSubjects(q) {
+      const all = App.getSubjects();
+      const filtered = q.trim()
+        ? all.filter(s =>
+            s.label.toLowerCase().includes(q.toLowerCase()) ||
+            s.desc.toLowerCase().includes(q.toLowerCase()) ||
+            (SUBJECT_TOPICS[s.id]||[]).some(t => t.toLowerCase().includes(q.toLowerCase()))
+          )
+        : all;
+      buildGrid(filtered);
+      const nr = document.getElementById('no-results');
+      document.getElementById('no-results-q').textContent = q;
+      nr.classList.toggle('hidden', filtered.length > 0);
+    }
+
+    buildGrid(App.getSubjects());
+
+    // Handle URL params from topics page links
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('search')) {
+      const q = params.get('search');
+      document.getElementById('search-input').value = q;
+      filterSubjects(q);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic AI — Sign In</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+
+    /* ── AUTH LAYOUT ── */
+    .auth-layout {
+      display: flex; width: 100%; max-width: 1000px; min-height: 600px;
+      border-radius: 24px; overflow: hidden; border: 1px solid var(--border);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6); margin: 1rem;
+    }
+
+    /* ── LEFT PANEL ── */
+    .auth-hero {
+      flex: 1; background: linear-gradient(160deg, #0d1130 0%, #111830 40%, #0c1622 100%);
+      padding: 3rem; display: flex; flex-direction: column; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .auth-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 100% 80% at 20% 20%, rgba(79,126,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 80% 80%, rgba(56,217,192,0.08) 0%, transparent 60%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-logo {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 3rem;
+    }
+    .hero-logo-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+    .hero-logo-text {
+      font-family: var(--font-head); font-size: 1.5rem; font-weight: 700;
+    }
+    .hero-headline {
+      font-family: var(--font-head); font-size: 2.4rem; font-weight: 900;
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+    .hero-headline .hl { color: var(--teal); }
+    .hero-sub { color: var(--text2); line-height: 1.7; max-width: 340px; margin-bottom: 2.5rem; }
+    .hero-features { display: flex; flex-direction: column; gap: 1rem; }
+    .hero-feature {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .hero-feat-icon {
+      width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .hero-feat-icon.blue  { background: rgba(79,126,255,0.15); }
+    .hero-feat-icon.teal  { background: rgba(56,217,192,0.15); }
+    .hero-feat-icon.gold  { background: rgba(245,200,66,0.15); }
+    .hero-feat-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+    .hero-feat-desc  { font-size: 0.8rem; color: var(--text3); }
+
+    .hero-patent {
+      position: absolute; bottom: 2rem; left: 3rem; right: 3rem;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      font-size: 0.78rem; color: var(--text3);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .auth-form-panel {
+      width: 420px; background: var(--bg2);
+      padding: 3rem 2.5rem; display: flex; flex-direction: column; justify-content: center;
+    }
+    .auth-tabs {
+      display: flex; background: var(--bg3); border-radius: 10px;
+      padding: 4px; margin-bottom: 2rem; gap: 4px;
+    }
+    .auth-tab {
+      flex: 1; padding: 0.6rem; text-align: center; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600; color: var(--text3);
+      background: transparent; transition: var(--transition); cursor: pointer; border: none;
+    }
+    .auth-tab.active {
+      background: var(--surface2); color: var(--text);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+    .auth-panel h2 { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .auth-panel p { color: var(--text2); font-size: 0.875rem; margin-bottom: 1.75rem; }
+
+    .form-row { display: flex; gap: 0.75rem; }
+    .form-row .form-group { flex: 1; }
+
+    .auth-form { display: flex; flex-direction: column; gap: 1rem; }
+    .auth-form .btn { margin-top: 0.5rem; justify-content: center; }
+
+    .pw-wrapper { position: relative; }
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; color: var(--text3); font-size: 0.9rem; padding: 4px;
+    }
+    .pw-toggle:hover { color: var(--text); }
+
+    .strength-bar { height: 4px; background: var(--bg3); border-radius: 2px; margin-top: 6px; }
+    .strength-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0; }
+
+    .demo-box {
+      margin-top: 1.5rem; padding: 1rem; background: rgba(79,126,255,0.07);
+      border: 1px solid rgba(79,126,255,0.2); border-radius: 10px;
+      font-size: 0.82rem; color: var(--text2);
+    }
+    .demo-box strong { color: var(--accent); }
+
+    .field-error {
+      font-size: 0.78rem; color: var(--rose); margin-top: 2px; display: none;
+    }
+    .field-error.show { display: block; }
+    .form-input.error { border-color: var(--rose); }
+    .form-input.valid { border-color: var(--green); }
+
+    @media (max-width: 820px) {
+      .auth-hero { display: none; }
+      .auth-layout { max-width: 480px; border-radius: 16px; }
+      .auth-form-panel { width: 100%; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+
+  <div class="auth-layout">
+    <!-- Hero Panel -->
+    <div class="auth-hero">
+      <div class="hero-content">
+        <div class="hero-logo">
+          <div class="hero-logo-icon">🦉</div>
+          <div class="hero-logo-text">Socratic AI</div>
+        </div>
+        <h1 class="hero-headline">Learn by <span class="hl">thinking,</span><br>not just reading.</h1>
+        <p class="hero-sub">An AI tutor that teaches through questions — the same way Socrates taught. Available across all subjects, all levels.</p>
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feat-icon blue">🎓</div>
+            <div>
+              <div class="hero-feat-title">Socratic Teaching Mode</div>
+              <div class="hero-feat-desc">AI guides you with questions — you discover answers yourself</div>
+            </div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feat-icon teal">💡</div>
+            <div>
+              <div class="hero-feat-title">Direct Answer Mode</div>
+              <div class="hero-feat-desc">Switch to clear, instant explanations when needed</div>
+            </div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feat-icon gold">📊</div>
+            <div>
+              <div class="hero-feat-title">Progress Tracking</div>
+              <div class="hero-feat-desc">Track XP, streaks, sessions, and subjects mastered</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-patent">
+        📄 Patent Concept — AI Essential Project &nbsp;·&nbsp; Socratic Learning Method + Adaptive AI
+      </div>
+    </div>
+
+    <!-- Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-panel active" id="panel-login">
+        <h2>Welcome back</h2>
+        <p>Sign in to continue your learning journey.</p>
+        <form class="auth-form" onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" autocomplete="email" required>
+            <span class="field-error" id="login-email-err"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="pw-wrapper">
+              <input type="password" id="login-password" class="form-input w-full" placeholder="Your password" autocomplete="current-password" required>
+              <button type="button" class="pw-toggle" onclick="togglePw('login-password', this)">👁</button>
+            </div>
+            <span class="field-error" id="login-pw-err"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full" id="login-btn">
+            Sign In →
+          </button>
+        </form>
+        <div class="demo-box">
+          <strong>Demo account:</strong><br>
+          Email: <strong>demo@socratic.ai</strong><br>
+          Password: <strong>Demo@1234</strong>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-panel" id="panel-register">
+        <h2>Create account</h2>
+        <p>Start your free Socratic learning journey today.</p>
+        <form class="auth-form" onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="Your full name" autocomplete="name" required>
+            <span class="field-error" id="reg-name-err"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" autocomplete="email" required>
+            <span class="field-error" id="reg-email-err"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="pw-wrapper">
+              <input type="password" id="reg-password" class="form-input w-full" placeholder="Min 8 chars, 1 uppercase, 1 number" autocomplete="new-password" oninput="checkStrength(this.value)" required>
+              <button type="button" class="pw-toggle" onclick="togglePw('reg-password', this)">👁</button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <span class="field-error" id="reg-pw-err"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="pw-wrapper">
+              <input type="password" id="reg-confirm" class="form-input w-full" placeholder="Repeat your password" autocomplete="new-password" required>
+              <button type="button" class="pw-toggle" onclick="togglePw('reg-confirm', this)">👁</button>
+            </div>
+            <span class="field-error" id="reg-confirm-err"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-full" id="reg-btn">
+            Create Account →
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Redirect if already logged in
+    Auth.redirectIfAuthed('chat.html');
+
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+      document.getElementById('panel-login').classList.toggle('active', tab==='login');
+      document.getElementById('panel-register').classList.toggle('active', tab==='register');
+    }
+
+    function togglePw(id, btn) {
+      const inp = document.getElementById(id);
+      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+      else { inp.type = 'password'; btn.textContent = '👁'; }
+    }
+
+    function setFieldError(inputId, errId, msg) {
+      const inp = document.getElementById(inputId);
+      const err = document.getElementById(errId);
+      if (msg) { inp.classList.add('error'); inp.classList.remove('valid'); err.textContent = msg; err.classList.add('show'); }
+      else { inp.classList.remove('error'); inp.classList.add('valid'); err.textContent = ''; err.classList.remove('show'); }
+    }
+
+    function clearErrors(ids) {
+      ids.forEach(([inp, err]) => {
+        document.getElementById(inp)?.classList.remove('error','valid');
+        const e = document.getElementById(err);
+        if (e) { e.textContent = ''; e.classList.remove('show'); }
+      });
+    }
+
+    function checkStrength(pw) {
+      const fill = document.getElementById('strength-fill');
+      let score = 0;
+      if (pw.length >= 8) score++;
+      if (/[A-Z]/.test(pw)) score++;
+      if (/[0-9]/.test(pw)) score++;
+      if (/[^A-Za-z0-9]/.test(pw)) score++;
+      const pct = (score / 4) * 100;
+      const colors = ['#ff5f7e','#f5c842','#4f7eff','#3ddc84'];
+      fill.style.width = pct + '%';
+      fill.style.background = colors[score-1] || 'transparent';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      clearErrors([['login-email','login-email-err'],['login-password','login-pw-err']]);
+      const btn = document.getElementById('login-btn');
+      btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Signing in…';
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      setTimeout(() => {
+        const result = Auth.login({ email, password });
+        if (result.ok) {
+          btn.innerHTML = '✓ Success!';
+          showToast('Welcome back! 👋', 'success');
+          setTimeout(() => window.location.href = 'chat.html', 600);
+        } else {
+          btn.disabled = false; btn.innerHTML = 'Sign In →';
+          if (result.errors.email) setFieldError('login-email','login-email-err', result.errors.email);
+          if (result.errors.password) setFieldError('login-password','login-pw-err', result.errors.password);
+        }
+      }, 600);
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      clearErrors([['reg-name','reg-name-err'],['reg-email','reg-email-err'],['reg-password','reg-pw-err'],['reg-confirm','reg-confirm-err']]);
+      const btn = document.getElementById('reg-btn');
+      btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Creating account…';
+
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm').value;
+
+      setTimeout(() => {
+        const result = Auth.register({ name, email, password, confirmPassword });
+        if (result.ok) {
+          btn.innerHTML = '✓ Account Created!';
+          showToast('Account created! Welcome aboard 🎉', 'success');
+          setTimeout(() => window.location.href = 'chat.html', 700);
+        } else {
+          btn.disabled = false; btn.innerHTML = 'Create Account →';
+          const errs = result.errors;
+          if (errs.name)     setFieldError('reg-name','reg-name-err', errs.name);
+          if (errs.email)    setFieldError('reg-email','reg-email-err', errs.email);
+          if (errs.password) setFieldError('reg-password','reg-pw-err', errs.password);
+          if (errs.confirm)  setFieldError('reg-confirm','reg-confirm-err', errs.confirm);
+        }
+      }, 600);
+    }
+  </script>
+</body>
+</html>

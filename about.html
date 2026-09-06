@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic AI — About & Patent</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page { padding-top: 80px; padding-bottom: 4rem; }
+
+    /* Hero */
+    .about-hero {
+      text-align: center; padding: 3rem 1rem 2rem;
+      position: relative;
+    }
+    .about-hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(79,126,255,0.1); border: 1px solid rgba(79,126,255,0.3);
+      border-radius: 100px; padding: 0.35rem 1rem;
+      font-size: 0.82rem; font-weight: 600; color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .about-hero h1 {
+      font-family: var(--font-head); font-size: 3rem; font-weight: 900;
+      line-height: 1.1; margin-bottom: 1rem;
+    }
+    .about-hero h1 span { color: var(--teal); }
+    .about-hero p { color: var(--text2); max-width: 560px; margin: 0 auto; font-size: 1.05rem; line-height: 1.7; }
+
+    /* Patent card */
+    .patent-card {
+      background: linear-gradient(160deg, var(--bg2), var(--bg3));
+      border: 1px solid var(--border2); border-radius: var(--radius-lg);
+      padding: 2.5rem; margin: 3rem 0;
+      position: relative; overflow: hidden;
+    }
+    .patent-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 90% 10%, rgba(56,217,192,0.06) 0%, transparent 60%);
+    }
+    .patent-header {
+      display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 2rem;
+      position: relative; z-index: 1;
+    }
+    .patent-seal {
+      width: 64px; height: 64px; border-radius: 16px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--gold), #e8a800);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.75rem; box-shadow: 0 4px 20px rgba(245,200,66,0.3);
+    }
+    .patent-title { font-family: var(--font-head); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .patent-subtitle { color: var(--text2); font-size: 0.9rem; }
+    .patent-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem; }
+
+    .patent-body { position: relative; z-index: 1; }
+    .patent-section { margin-bottom: 2rem; }
+    .patent-section-title {
+      font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+      color: var(--teal); margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .patent-section p { color: var(--text2); line-height: 1.75; font-size: 0.95rem; }
+    .patent-claims { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+    .patent-claim {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem;
+    }
+    .claim-num {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(79,126,255,0.15); color: var(--accent);
+      font-size: 0.8rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .claim-text { font-size: 0.9rem; color: var(--text2); line-height: 1.6; }
+
+    /* How it works */
+    .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .how-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem; text-align: center;
+    }
+    .how-step { font-size: 2rem; margin-bottom: 0.75rem; }
+    .how-title { font-weight: 700; margin-bottom: 0.4rem; }
+    .how-desc { font-size: 0.82rem; color: var(--text3); line-height: 1.6; }
+
+    /* Modes comparison */
+    .mode-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 1.5rem; }
+    .mode-card {
+      border-radius: var(--radius-lg); padding: 2rem;
+    }
+    .mode-card.socratic { background: rgba(79,126,255,0.08); border: 1px solid rgba(79,126,255,0.25); }
+    .mode-card.direct   { background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25); }
+    .mode-card-title { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .mode-card ul { padding-left: 1.25rem; color: var(--text2); font-size: 0.88rem; line-height: 2; }
+
+    .cta-row { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+
+    @media (max-width: 640px) {
+      .about-hero h1 { font-size: 2rem; }
+      .mode-compare { grid-template-columns: 1fr; }
+      .patent-header { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+  <nav class="nav" id="main-nav"></nav>
+
+  <main class="page">
+    <div class="container-sm">
+
+      <!-- Hero -->
+      <div class="about-hero">
+        <div class="about-hero-badge">📄 AI Essential — Patent Project</div>
+        <h1>The <span>Socratic</span> AI<br>Learning System</h1>
+        <p>A patented approach to AI-powered education that teaches students through guided inquiry — making AI a tutor, not just an answer machine.</p>
+      </div>
+
+      <!-- Patent Card -->
+      <div class="patent-card">
+        <div class="patent-header">
+          <div class="patent-seal">📜</div>
+          <div>
+            <div class="patent-title">Adaptive Socratic AI Tutoring System</div>
+            <div class="patent-subtitle">Patent Concept — Engineering Department · AI Essential Subject</div>
+            <div class="patent-meta">
+              <span class="badge badge-gold">📄 Patent Concept</span>
+              <span class="badge badge-teal">🤖 AI-Powered</span>
+              <span class="badge badge-blue">🎓 EdTech</span>
+              <span class="badge badge-green">⚙️ Engineering</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="patent-body">
+          <div class="patent-section">
+            <div class="patent-section-title">📋 Abstract</div>
+            <p>This patent describes an Adaptive Socratic AI Tutoring System — a computer-implemented method and apparatus for providing personalized educational interactions using large language models. The system uniquely operates in two switchable modes: a <strong>Socratic Teaching Mode</strong> that guides students through discovery-based questioning, and a <strong>Direct Answer Mode</strong> that provides immediate, comprehensive explanations. The system tracks learner progress, adapts difficulty dynamically, and covers all academic disciplines.</p>
+          </div>
+
+          <div class="patent-section">
+            <div class="patent-section-title">🔬 Core Innovation</div>
+            <p>Unlike conventional AI chatbots that simply answer questions, this system implements the 2,500-year-old Socratic method in a digital AI form. When in Teaching Mode, the AI deliberately withholds direct answers and instead asks probing questions to stimulate critical thinking, guide hypothesis formation, and lead the student to self-discovery — a method proven by cognitive science to produce deeper, longer-lasting learning than passive information consumption.</p>
+          </div>
+
+          <div class="patent-section">
+            <div class="patent-section-title">⚖️ Patent Claims</div>
+            <ul class="patent-claims">
+              <li class="patent-claim">
+                <div class="claim-num">1</div>
+                <div class="claim-text">A computer-implemented method for AI-assisted education comprising: receiving a student query; determining a configured teaching mode from {SOCRATIC, DIRECT}; and generating a response conditioned on said mode — Socratic mode generating guiding questions, Direct mode generating comprehensive answers.</div>
+              </li>
+              <li class="patent-claim">
+                <div class="claim-num">2</div>
+                <div class="claim-text">The system of claim 1, further comprising a mode-switching interface allowing real-time toggling between Socratic and Direct modes without loss of conversational context or session history.</div>
+              </li>
+              <li class="patent-claim">
+                <div class="claim-num">3</div>
+                <div class="claim-text">A progress tracking subsystem that records learner metrics including session count, questions asked, consecutive-day streaks, and experience points (XP); and a leveling algorithm that maps accumulated XP to discrete learner levels.</div>
+              </li>
+              <li class="patent-claim">
+                <div class="claim-num">4</div>
+                <div class="claim-text">A subject-scoping mechanism that receives a selected academic subject and injects subject context into the AI system prompt, directing the AI to apply Socratic or Direct instruction within the chosen domain.</div>
+              </li>
+              <li class="patent-claim">
+                <div class="claim-num">5</div>
+                <div class="claim-text">An authentication system with email-and-password-based user accounts, session management, and per-user persistent storage of learning mode preferences and progress statistics.</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="patent-section">
+            <div class="patent-section-title">💻 Technical Implementation</div>
+            <p>The system is implemented as a single-page web application with no backend server required, using browser-based persistent storage (localStorage) for user accounts and session data. The AI engine is powered by Anthropic's Claude language model via API, with dynamically constructed system prompts that enforce the selected teaching mode. All conversational context is maintained in-memory and transmitted with each API request to ensure coherent multi-turn dialogues.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div class="section-heading mb-1">⚙️ How It Works</div>
+      <p class="section-sub mb-3">A four-step intelligent learning loop powered by Claude AI</p>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-step">🔐</div>
+          <div class="how-title">1. Authenticate</div>
+          <div class="how-desc">Create a real account with email & password. No random access — your progress is saved securely.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-step">📚</div>
+          <div class="how-title">2. Choose Subject</div>
+          <div class="how-desc">Select from 12 subjects. The AI focuses its knowledge and adapts starter questions to your topic.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-step">🔀</div>
+          <div class="how-title">3. Pick Your Mode</div>
+          <div class="how-desc">Switch between Teach Me (Socratic) and Answer Mode anytime — even mid-conversation.</div>
+        </div>
+        <div class="how-card">
+          <div class="how-step">📊</div>
+          <div class="how-title">4. Track Progress</div>
+          <div class="how-desc">Earn XP, level up, maintain streaks, and unlock achievements as you learn.</div>
+        </div>
+      </div>
+
+      <!-- Mode Comparison -->
+      <div class="section-heading mb-1 mt-4">🔀 Two Learning Modes</div>
+      <p class="section-sub mb-3">Designed for different stages of learning — use both!</p>
+      <div class="mode-compare">
+        <div class="mode-card socratic">
+          <div class="mode-card-title">🎓 Socratic (Teach Me)</div>
+          <p style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">The AI asks questions instead of giving answers. Best for deep learning.</p>
+          <ul>
+            <li>Builds critical thinking skills</li>
+            <li>Forces active recall</li>
+            <li>Mimics great human teachers</li>
+            <li>Best for exam preparation</li>
+            <li>Produces lasting understanding</li>
+          </ul>
+        </div>
+        <div class="mode-card direct">
+          <div class="mode-card-title">💡 Direct (Answer Mode)</div>
+          <p style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">The AI gives clear, complete answers with examples. Best for quick help.</p>
+          <ul>
+            <li>Fast concept clarification</li>
+            <li>Ideal for revision sessions</li>
+            <li>Step-by-step explanations</li>
+            <li>Good for new topics first</li>
+            <li>Analogies & visual examples</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="chat.html" class="btn btn-primary btn-lg">🚀 Start Learning</a>
+        <a href="topics.html" class="btn btn-secondary btn-lg">📚 Browse Topics</a>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    injectNav('about');
+  </script>
+</body>
+</html>

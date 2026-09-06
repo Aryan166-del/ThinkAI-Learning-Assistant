@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic AI — Chat</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { overflow: hidden; }
+    .chat-layout {
+      display: flex; height: 100vh; padding-top: 64px;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px; background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+    }
+    .sidebar-header {
+      padding: 1.25rem 1rem 1rem; border-bottom: 1px solid var(--border);
+    }
+    .sidebar-title {
+      font-size: 0.7rem; font-weight: 700; color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem;
+    }
+    .sidebar-scroll { flex: 1; overflow-y: auto; padding: 1rem; }
+
+    /* Mode Panel */
+    .mode-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;
+    }
+    .mode-panel-title { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    #mode-desc { font-size: 0.78rem; color: var(--text2); line-height: 1.5; margin-top: 0.5rem; }
+
+    /* Subject chips */
+    .subjects-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.5rem; }
+    .subject-chip { font-size: 0.75rem; padding: 0.3rem 0.65rem; }
+
+    /* Starter questions */
+    #starter-questions { display: flex; flex-direction: column; gap: 6px; margin-top: 0.75rem; }
+    .starter-btn {
+      border-radius: 8px; font-size: 0.78rem; padding: 0.5rem 0.75rem;
+      white-space: normal; text-align: left; line-height: 1.4;
+    }
+
+    /* Sidebar actions */
+    .sidebar-actions { padding: 1rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; }
+    .sidebar-actions .btn { flex: 1; justify-content: center; font-size: 0.8rem; }
+
+    /* ── CHAT MAIN ── */
+    .chat-main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    }
+
+    /* Chat header */
+    .chat-header {
+      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg2); flex-shrink: 0;
+    }
+    .chat-header-left { display: flex; align-items: center; gap: 12px; }
+    .chat-header-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; }
+    .chat-header-sub { font-size: 0.8rem; color: var(--text3); }
+
+    /* Messages */
+    #chat-messages {
+      flex: 1; overflow-y: auto; padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1.25rem;
+    }
+
+    /* Welcome */
+    .chat-welcome {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 1rem; padding: 3rem;
+    }
+    .welcome-owl { font-size: 3.5rem; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+    .chat-welcome h2 { font-family: var(--font-head); font-size: 1.5rem; }
+    .chat-welcome p { color: var(--text2); max-width: 360px; }
+
+    /* Messages */
+    .message {
+      display: flex; gap: 12px; animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .message-user { flex-direction: row-reverse; }
+    .message-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+    }
+    .message-user .message-avatar {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border-color: transparent;
+    }
+    .message-body { max-width: 72%; }
+    .message-user .message-body { align-items: flex-end; }
+    .message-meta {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 4px;
+    }
+    .message-user .message-meta { flex-direction: row-reverse; }
+    .message-name { font-size: 0.8rem; font-weight: 700; }
+    .message-time { font-size: 0.72rem; color: var(--text3); }
+    .message-text {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 0.75rem 1rem;
+      font-size: 0.9rem; line-height: 1.65;
+    }
+    .message-user .message-text {
+      background: linear-gradient(135deg, rgba(79,126,255,0.2), rgba(123,94,167,0.15));
+      border-color: rgba(79,126,255,0.25);
+    }
+    .message-text strong { color: var(--teal); }
+    .message-text code {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 6px;
+      font-family: var(--font-mono); font-size: 0.85em;
+    }
+    .message-text h2, .message-text h3, .message-text h4 {
+      font-family: var(--font-head); margin: 0.5rem 0 0.25rem; color: var(--text);
+    }
+    .message-text ol, .message-text ul { padding-left: 1.25rem; }
+    .message-text li { margin-bottom: 0.25rem; }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 1rem 1.5rem 1.25rem; border-top: 1px solid var(--border);
+      background: var(--bg2); flex-shrink: 0;
+    }
+    .input-row {
+      display: flex; gap: 0.75rem; align-items: flex-end;
+    }
+    .input-wrapper {
+      flex: 1; background: var(--surface); border: 1px solid var(--border2);
+      border-radius: var(--radius); overflow: hidden; transition: var(--transition);
+    }
+    .input-wrapper:focus-within {
+      border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,126,255,0.1);
+    }
+    #chat-input {
+      width: 100%; background: transparent; border: none;
+      padding: 0.75rem 1rem; color: var(--text); font-size: 0.9rem;
+      resize: none; min-height: 48px; max-height: 160px; line-height: 1.5;
+    }
+    #chat-input::placeholder { color: var(--text3); }
+    .input-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.4rem 1rem; border-top: 1px solid var(--border);
+    }
+    .input-hint { font-size: 0.72rem; color: var(--text3); }
+    #char-count { font-family: var(--font-mono); }
+    .send-btn {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(79,126,255,0.3); transition: var(--transition);
+    }
+    .send-btn:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 6px 20px rgba(79,126,255,0.45); }
+    .send-btn:disabled { opacity: 0.4; transform: none; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .chat-header-sub { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="bg-grid"></div>
+
+  <nav class="nav" id="main-nav"></nav>
+
+  <div class="chat-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Learning Mode</div>
+        <div class="mode-toggle">
+          <button class="mode-btn" data-mode="socratic">🎓 Teach Me</button>
+          <button class="mode-btn" data-mode="direct">💡 Answer</button>
+        </div>
+        <div class="mode-panel" style="margin-top:0.75rem">
+          <p id="mode-desc" style="font-size:0.78rem;color:var(--text2);line-height:1.5;margin:0"></p>
+        </div>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="sidebar-title" style="margin-bottom:0.6rem">Subject Focus</div>
+        <div class="subjects-grid" id="subjects-grid"></div>
+
+        <div id="starters-section" style="margin-top:1.25rem">
+          <div class="sidebar-title" style="margin-bottom:0.5rem">Quick Questions</div>
+          <div id="starter-questions"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn btn-ghost btn-sm" id="new-chat-btn">✨ New</button>
+        <button class="btn btn-ghost btn-sm" id="clear-btn">🗑 Clear</button>
+      </div>
+    </div>
+
+    <!-- Chat Main -->
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="chat-header-left">
+          <div style="font-size:1.5rem">🦉</div>
+          <div>
+            <div class="chat-header-title">Socratic AI Tutor</div>
+            <div class="chat-header-sub">Powered by Claude — All subjects, two modes</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <span class="badge badge-blue" id="mode-badge">🎓 Teach Me</span>
+        </div>
+      </div>
+
+      <div id="chat-messages"></div>
+
+      <div class="chat-input-area">
+        <div class="input-row">
+          <div class="input-wrapper">
+            <textarea id="chat-input" placeholder="Ask anything… or pick a subject and question from the sidebar →" rows="1"></textarea>
+            <div class="input-footer">
+              <span class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</span>
+              <span class="input-hint"><span id="char-count">0</span> chars</span>
+            </div>
+          </div>
+          <button class="send-btn" id="send-btn" disabled>➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/chat.js"></script>
+  <script>
+    // Inject nav
+    injectNav('chat');
+
+    // Build subject grid
+    const grid = document.getElementById('subjects-grid');
+    App.getSubjects().forEach(s => {
+      const chip = document.createElement('button');
+      chip.className = 'chip subject-chip';
+      chip.dataset.subject = s.id;
+      chip.title = s.desc;
+      chip.innerHTML = s.emoji + ' ' + s.label;
+      grid.appendChild(chip);
+    });
+
+    // Init chat
+    Chat.init();
+  </script>
+</body>
+</html>
